@@ -1,0 +1,199 @@
+<html xmlns="http://www.w3.org/1999/html">
+    <head>
+        <link href="{{ url_for('static', filename='favicon.png')}}" rel="icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sketcher</title>
+        <style type="text/css">
+#dvPreview
+{
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);
+    max-height: 400px;
+    max-width: 400px;
+    display: none;
+    align: center;
+}
+body{
+      background:#2c3e50;
+      color:#ecf0f1;
+      font-family:lato,sans-serif;
+      text-align:center;
+      margin:3% auto;
+      display:table;
+      margin-bottom: 50px;
+}
+form{
+  text-align:left;
+}
+
+#fileupload {
+    position: absolute;
+    left: -9999px;
+}
+
+label[for="fileupload"]{
+  padding:0.5em;
+  display:inline-block;
+  background:#bdc3c7;
+  cursor:pointer;
+  background:#bdc3c7;
+}
+#filename{
+  padding:0.5em;
+  width:150px;
+  overflow:hidden;
+  background:#bdc3c7;
+  text-align:center;
+}
+.progress-wrapper {
+    width:80%;
+}
+.progress-wrapper .progress {
+    background-color:#4CAF50;
+    width:0%;
+    padding:5px 0px 5px 0px;
+}
+input[type=submit] {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.c{
+    text-align:center;
+}
+.footer {
+   position: absolute;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   height:50px;
+   color: #ecf0f1;
+   font-family:lato,sans-serif;
+}
+html {
+    position: relative;
+    min-height: 100%;
+}
+</style>
+    </head>
+    <body>
+    <h1>Sketcher</h1>
+    <h3>Create Your Sketches in One Click</h3>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <form class="c" action="" method=post enctype=multipart/form-data>
+        <span id="filename">Upload your Image..</span>&nbsp;
+    <label for="fileupload">Select here<input id="fileupload" type='file' name=file onchange="return myFunction()">
+    </label>
+        <br>
+        <br>
+    <div id="dvPreview" style="max-width:100%;height:auto;">
+</div>
+    <br>
+    <div class="c">
+        <input onclick="update()" type=submit value='Convert Into Sketch'>
+    </div>
+        <div class="progress-wrapper">
+        <div id="progress-bar-file1" class="progress"></div>
+    </div>
+    </form>
+    <div class="footer">
+  <p>Made By Milind Bajaj</p>
+</div>
+    <script>
+     if(!!window.performance && window.performance.navigation.type == 2)
+{
+    window.location.reload();
+}
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script language="javascript" type="text/javascript">
+         $('[type=submit]').hide();
+         function myFunction() {
+             var file = document.getElementById("fileupload");
+             var file_name = file.value;
+             var extension = file_name.split('.').pop().toLowerCase();
+             var size      = file.files[0].size;
+             var allowedFormats = ["jpeg", "jpg", "png", "gif"];
+
+              if(!(allowedFormats.indexOf(extension) > -1)){
+               alert("Please Select only Image file");
+               file.value = '';
+               return false;
+              } else if( ((size/1024)/1024) > 4){
+                 alert("Your file should be less than 4MB");
+                 file.value = '';
+                 return false;
+              } else {
+                  setInterval(function(){
+                 if($('#fileupload').val()!=""){
+                   $('[type=submit]').show();
+                 }else{
+                   $('[type=submit]').hide();
+                   }
+                 },1000);
+              }
+        }
+</script>
+    <script>
+       $(function () {
+    $("#fileupload").change(function () {
+        $("#dvPreview").html("");
+        if (typeof (FileReader) != "undefined") {
+                    $("#dvPreview").show();
+                    $("#dvPreview").append("<img />");
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $("#dvPreview img").attr("src", e.target.result)
+                                           .width(500)
+                                           .height(400);
+
+                    }
+                    reader.readAsDataURL($(this)[0].files[0]);
+                }
+           else {
+                    alert("This browser does not support FileReader.");
+                }
+    });
+});
+ </script>
+    <script>
+        $('#fileupload').change(function() {
+    var filepath = this.value;
+    var m = filepath.match(/([^\/\\]+)$/);
+    var filename = m[1];
+    $('#filename').html(filename);
+});
+    </script>
+    <script>
+     function update() {
+    var formdata = new FormData();
+
+    formdata.append('fileupload', $('#fileupload')[0].files[0]);
+
+    var request = new XMLHttpRequest();
+
+    request.upload.addEventListener('progress', function (e) {
+        var file1Size = $('#fileupload')[0].files[0].size;
+
+        if (e.loaded <= file1Size) {
+            var percent = Math.round(e.loaded / file1Size * 100);
+            $('#progress-bar-file1').width(percent + '%').html(percent + '%');
+        }
+
+        if(e.loaded == e.total){
+            $('#progress-bar-file1').width(100 + '%').html(100 + '%');
+        }
+    });
+
+    request.open('post', '');
+    request.timeout = 45000;
+    request.send(formdata);
+}
+</script>
+</script>
+    </body>
+</html>
